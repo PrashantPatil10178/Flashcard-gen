@@ -1,3 +1,4 @@
+import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ images });
   } catch {
     return NextResponse.json(
-      { error: "Failed to extract PPT" },
+      { error: `Failed to extract PPT ${error}` },
       { status: 500 }
     );
   }
