@@ -8,16 +8,22 @@ interface RenderOptions {
   height: number;
 }
 
+// Define render function at module level to avoid minification issues
 async function renderFunction(options: RenderOptions) {
-  return await sharp(options.data, {
-    raw: {
-      width: options.width,
-      height: options.height,
-      channels: 4,
-    },
-  })
-    .png()
-    .toBuffer();
+  try {
+    return await sharp(options.data, {
+      raw: {
+        width: options.width,
+        height: options.height,
+        channels: 4,
+      },
+    })
+      .png()
+      .toBuffer();
+  } catch (error) {
+    console.error("Sharp rendering error:", error);
+    throw error;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -44,13 +50,14 @@ export async function POST(request: NextRequest) {
     console.log(`Document loaded with ${pageCount} pages`);
 
     const images = [];
-    const maxPages = Math.min(pageCount, 10); // Fixed: Use min instead of max
+    const maxPages = Math.min(pageCount, 10);
 
     for (let i = 0; i < maxPages; i++) {
       try {
         console.log(`Processing page ${i + 1}/${maxPages}...`);
         const page = document.getPage(i);
 
+        // Explicitly pass the render function
         const image = await page.render({
           scale: 7,
           render: renderFunction,
@@ -68,7 +75,6 @@ export async function POST(request: NextRequest) {
         console.log(`Page ${i + 1} processed successfully`);
       } catch (pageError) {
         console.error(`Error processing page ${i}:`, pageError);
-        // Continue with next page instead of failing entirely
         continue;
       }
     }
@@ -77,7 +83,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("PDF processing failed:", error);
 
-    // Extract meaningful error information
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : undefined;
     const errorCode = (error as any).code;
@@ -94,11 +99,9 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   } finally {
-    // Ensure resources are always cleaned up
     if (document) {
       try {
         document.destroy();
-        console.log("Document destroyed");
       } catch (cleanupError) {
         console.error("Error destroying document:", cleanupError);
       }
@@ -107,7 +110,6 @@ export async function POST(request: NextRequest) {
     if (library) {
       try {
         library.destroy();
-        console.log("Library destroyed");
       } catch (cleanupError) {
         console.error("Error destroying library:", cleanupError);
       }
