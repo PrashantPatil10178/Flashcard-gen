@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const images = [];
     const maxPages = Math.max(pageCount, 10);
 
-    for (let i = 0; i < maxPages; i++) {
+    for (let i = 0; i < pageCount; i++) {
       try {
         console.log(`Processing page ${i + 1}/${maxPages}...`);
         const page = document.getPage(i);
