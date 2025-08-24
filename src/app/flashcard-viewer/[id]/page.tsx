@@ -1,9 +1,9 @@
 "use client";
 import { useAuth } from "@/components/AuthProvider";
-import FlashcardLibrary from "@/components/FlashcardLibrary";
+import LoginForm from "@/components/LoginForm";
 
-export default function HomePage() {
-  const { loading } = useAuth();
+export default function FlashcardViewerPage() {
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -13,5 +13,9 @@ export default function HomePage() {
     );
   }
 
-  return <FlashcardLibrary />;
+  if (!user) {
+    return <LoginForm />;
+  }
+
+  return <div>Flashcard Viewer - To be implemented</div>;
 }
