@@ -8,7 +8,6 @@ interface RenderOptions {
   height: number;
 }
 
-// Define render function at module level to avoid minification issues
 async function renderFunction(options: RenderOptions) {
   try {
     return await sharp(options.data, {
@@ -50,7 +49,7 @@ export async function POST(request: NextRequest) {
     console.log(`Document loaded with ${pageCount} pages`);
 
     const images = [];
-    const maxPages = Math.min(pageCount, 10);
+    const maxPages = Math.max(pageCount, 10);
 
     for (let i = 0; i < maxPages; i++) {
       try {
