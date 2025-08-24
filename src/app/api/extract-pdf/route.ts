@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PDFiumLibrary } from "@hyzyla/pdfium";
 import sharp from "sharp";
+import { error } from "console";
 
 interface RenderOptions {
   data: Uint8Array;
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ images });
   } catch {
     return NextResponse.json(
-      { error: "Failed to extract PDF" },
+      { error: `Failed to extract PDF ${error}` },
       { status: 500 }
     );
   }
