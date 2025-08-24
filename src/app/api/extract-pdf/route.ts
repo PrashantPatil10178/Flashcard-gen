@@ -63,7 +63,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ images });
   } catch {
     return NextResponse.json(
-      { error: `Failed to extract PDF ${error}` },
+      {
+        error: `Failed to extract PDF `,
+        details: error,
+        message: error.toString(),
+      },
       { status: 500 }
     );
   }
