@@ -28,7 +28,6 @@ async function renderFunction(options: RenderOptions) {
 export async function POST(request: NextRequest) {
   let library: any = null;
   let document: any = null;
-
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -48,15 +47,15 @@ export async function POST(request: NextRequest) {
     const pageCount = document.getPageCount();
     console.log(`Document loaded with ${pageCount} pages`);
 
+    // FIXED: Use Math.min to process at most 10 pages
+    const maxPages = Math.min(pageCount, 10);
     const images = [];
-    const maxPages = Math.max(pageCount, 10);
 
-    for (let i = 0; i < pageCount; i++) {
+    for (let i = 0; i < maxPages; i++) {
       try {
         console.log(`Processing page ${i + 1}/${maxPages}...`);
         const page = document.getPage(i);
 
-        // Explicitly pass the render function
         const image = await page.render({
           scale: 7,
           render: renderFunction,
@@ -81,7 +80,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ images });
   } catch (error) {
     console.error("PDF processing failed:", error);
-
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : undefined;
     const errorCode = (error as any).code;
@@ -105,7 +103,6 @@ export async function POST(request: NextRequest) {
         console.error("Error destroying document:", cleanupError);
       }
     }
-
     if (library) {
       try {
         library.destroy();
