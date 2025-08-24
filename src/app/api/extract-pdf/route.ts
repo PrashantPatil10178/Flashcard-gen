@@ -47,13 +47,12 @@ export async function POST(request: NextRequest) {
     const pageCount = document.getPageCount();
     console.log(`Document loaded with ${pageCount} pages`);
 
-    // FIXED: Use Math.min to process at most 10 pages
-    const maxPages = Math.min(pageCount, 10);
     const images = [];
 
-    for (let i = 0; i < maxPages; i++) {
+    // Process ALL pages in the PDF
+    for (let i = 0; i < pageCount; i++) {
       try {
-        console.log(`Processing page ${i + 1}/${maxPages}...`);
+        console.log(`Processing page ${i + 1}/${pageCount}...`);
         const page = document.getPage(i);
 
         const image = await page.render({
